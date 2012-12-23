@@ -30,11 +30,15 @@ class QgsMapToolCapturePolygon(QgsMapTool):
     QgsMapTool subclass to capture polygon with preset edge length and add
     it as new features to the current layer.
     """
-    def __init__(self, iface, spinBox, isPolygon):
+    def __init__(self, iface, absBox, spinBox, spinBoxAngle, lockBox, lockBoxAngle, isPolygon):
         QgsMapTool.__init__(self, iface.mapCanvas())
         self.iface = iface
         self.canvas = iface.mapCanvas()
+        self.absBox = absBox
         self.spinBox = spinBox
+        self.spinBoxAngle = spinBoxAngle
+        self.lockBox = lockBox
+        self.lockBoxAngle = lockBoxAngle
         # If true the new geometry is a polygon else if false it's a line
         self.isPolygon = isPolygon
         # Create an empty rubber band
@@ -137,7 +141,11 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         """
     
         # Get the distance from the UI
+        absBox = self.absBox.isChecked()
         distance = self.spinBox.value()
+        angle = self.spinBoxAngle.value()
+        distanceLock = self.lockBox.isChecked()
+        angleLock = self.lockBoxAngle.isChecked()
 
         # Coordinates of mouse click
         newPt = None
@@ -145,7 +153,8 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         # If the capture list contains already vertices, then calculate the new position
         # based on the distance (and considering snapping)
         if len(self.captureList) > 0:
-            newPt = self.calculatePointPos(pt, distance)
+            newPt = self.calculatePointPos(pt, absBox, distance, angle, distanceLock, angleLock)
+           
 
         # If this is the first point add a new point to the
         # capture list at the current mouse position considering
@@ -177,15 +186,21 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         @param {QgsPoint} pt Mouse pointer position in map coordinates
         """
         # Get the distance from the UI
+        absBox = self.absBox.isChecked()
         distance = self.spinBox.value()
+        angle = self.spinBoxAngle.value()
+        distanceLock = self.lockBox.isChecked()
+        angleLock = self.lockBoxAngle.isChecked()
 
         # Coordinates of mouse move
         cursorPt = QgsPoint(pt.x(), pt.y())
         newPt = None
 
+        
+
         nbrVertices = self.rubberBand.numberOfVertices()
         if nbrVertices > 1:
-            newPt = self.calculatePointPos(cursorPt, distance)
+            newPt = self.calculatePointPos(cursorPt, absBox, distance, angle, distanceLock, angleLock)
             # Move the last point to create an interactive movement
             self.rubberBand.movePoint(newPt)
 
@@ -287,7 +302,7 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         # Clear and refresh the canvas in any case
         self.clearMapCanvas()
 
-    def calculatePointPos(self, pt, distance):
+    def calculatePointPos(self, pt, absBox, distance, angle, distanceLock, angleLock):
         """
         Calculate a new point based on the distance from the spin box and the snapping
         properties. Snapping has priority to the distance! That means first the new
@@ -299,29 +314,59 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         @param {QgsPoint} pt Mouse pointer in map coordinates
         @param {double} distance Preset length of the new edge in map units
         """
-        # If the distance is zero, do not calculate a point position based on the distance
-        # but attach the new point to the mouse click resp. pointer
-        if distance > 0:
-            # Take the second last point, since the last one is just for the interactive movement
-            lastPt = self.rubberBand.getPoint(0, self.rubberBand.numberOfVertices()-2)
-            # Attention! The angle and new point are calculated in plain trigonmetry!
-            # Depending on the projection this is not very accurate!
-            diffX = pt.x() - lastPt.x()
-            diffY = pt.y() - lastPt.y()
-            # Calculate angle
-            beta = math.atan2(diffY, diffX)
+
+        #TODO : CALCULATE ANGLE
+        pt = self.snapToBackgroundLayers(pt)
+
+        # Take the second last point, since the last one is just for the interactive movement
+        lastPt = self.rubberBand.getPoint(0, self.rubberBand.numberOfVertices()-2)
+        # Attention! The angle and new point are calculated in plain trigonmetry!
+        # Depending on the projection this is not very accurate!
+        diffX = pt.x() - lastPt.x()
+        diffY = pt.y() - lastPt.y()
+        # Calculate angle
+        beta = math.atan2(diffY, diffX)
+        # Calculate the previous angle (for relative angle calulations)
+        lastbeta = 0
+        if self.rubberBand.numberOfVertices() > 2:
+            preLastPt = self.rubberBand.getPoint(0, self.rubberBand.numberOfVertices()-3)
+            prediffX = lastPt.x() - preLastPt.x()
+            prediffY = lastPt.y() - preLastPt.y()
+            lastbeta = math.atan2(prediffY, prediffX)
+        # Calculate the distance
+        if angleLock:
+            #TODO : if the angle is locked, the distance should be the projection and not the true distance
+            distance = math.sqrt( diffX*diffX + diffY*diffY )
+        else:
+            distance = math.sqrt( diffX*diffX + diffY*diffY )
+
+        #TODO : ANGLE ABS ( absBox )
+        #TEST !
+        if angleLock:
+            if absBox:
+                beta = angle/180.0*math.pi
+            else:
+                beta = lastbeta + angle/180.0*math.pi
+        else:
+            if absBox:
+                self.spinBoxAngle.setValue(beta/math.pi*180.0)
+            else:
+                self.spinBoxAngle.setValue( (beta-lastbeta)/math.pi*180.0  )
+
+        if distanceLock:
+            distance = self.spinBox.value()
+        else:
+            self.spinBox.setValue(distance)
+            #distance = math.sqrt( diffX*diffX + diffY*diffY )
+
+        if distanceLock or angleLock:
             # Calculate new point
             a = math.cos(beta) * distance
             b = math.sin(beta) * distance
-
             calcPt = QgsPoint(lastPt.x() + a, lastPt.y() + b)
-
-        # Take the input point
+            return calcPt
         else:
-            calcPt = pt
-
-        # Snap the new calculated point to the background
-        return self.snapToBackgroundLayers(calcPt);
+            return pt
 
     def snapToBackgroundLayers(self, qgspoint):
         """

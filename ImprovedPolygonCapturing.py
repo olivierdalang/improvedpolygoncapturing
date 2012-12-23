@@ -68,29 +68,52 @@ class ImprovedPolygonCapturing:
         self.iface.digitizeToolBar().addAction(self.capturePolygonAction)
 
         # Create a spin box to enter the distance and add it the to digitize toolbar
+        self.absBox = QCheckBox(self.iface.mainWindow())
         self.spinBox = QDoubleSpinBox(self.iface.mainWindow())
+        self.spinBoxAngle = QDoubleSpinBox(self.iface.mainWindow())
+        self.lockBox = QCheckBox(self.iface.mainWindow())
+        self.lockBoxAngle = QCheckBox(self.iface.mainWindow())
         # The inital value is 10
         self.spinBox.setValue(10.00)
+        self.spinBoxAngle.setValue(0.00)
         # Set the minimum to zero, zero means that the distance is not considered
-        self.spinBox.setDecimals(3)
+        self.spinBox.setDecimals(8)
         self.spinBox.setMinimum(0.000)
         self.spinBox.setMaximum(9999.999)
+        self.spinBoxAngle.setDecimals(8)
+        self.spinBoxAngle.setMinimum(-360.0)
+        self.spinBoxAngle.setMaximum(360.0)
+        self.iface.digitizeToolBar().addWidget( QLabel('dist') )
         self.spinBoxAction = self.iface.digitizeToolBar().addWidget(self.spinBox)
+        self.lockBoxAction = self.iface.digitizeToolBar().addWidget(self.lockBox)
         self.spinBoxAction.setEnabled(False)
+        self.lockBoxAction.setEnabled(False)
+        self.iface.digitizeToolBar().addWidget( QLabel('angle') )
+        self.spinBoxAction2 = self.iface.digitizeToolBar().addWidget(self.spinBoxAngle)
+        self.lockBoxAction2 = self.iface.digitizeToolBar().addWidget(self.lockBoxAngle)
+        self.iface.digitizeToolBar().addWidget( QLabel('abs') )
+        self.absBoxAction = self.iface.digitizeToolBar().addWidget(self.absBox)
+        self.spinBoxAction2.setEnabled(False)
+        self.lockBoxAction2.setEnabled(False)
+        self.absBoxAction.setEnabled(False)
 
         # Connect to signals for button behaviour
         QObject.connect(self.capturePolygonAction, SIGNAL("triggered()"), self.start)
         QObject.connect(self.iface, SIGNAL("currentLayerChanged(QgsMapLayer*)"), self.toggle)
     
         # This is the coordinates capture tool
-        self.tool = QgsMapToolCapturePolygon(self.iface, self.spinBox, self.isPolygon)
+        self.tool = QgsMapToolCapturePolygon(self.iface, self.absBox, self.spinBox, self.spinBoxAngle, self.lockBox, self.lockBoxAngle, self.isPolygon)
 
     def unload(self):
         """
         Remove the plugin menu item and icon from the toolbar
         """
         self.iface.digitizeToolBar().removeAction(self.capturePolygonAction)
+        self.iface.digitizeToolBar().removeAction(self.absBoxAction)
         self.iface.digitizeToolBar().removeAction(self.spinBoxAction)
+        self.iface.digitizeToolBar().removeAction(self.spinBoxAction2)
+        self.iface.digitizeToolBar().removeAction(self.lockBoxAction)
+        self.iface.digitizeToolBar().removeAction(self.lockBoxAction2)
 
     def toggle(self):
         layer = self.canvas.currentLayer()
@@ -102,7 +125,11 @@ class ImprovedPolygonCapturing:
             if layer.geometryType() == QGis.Polygon or layer.geometryType() == QGis.Line:
                 if layer.isEditable():
                     self.capturePolygonAction.setEnabled(True)
+                    self.absBoxAction.setEnabled(True)
                     self.spinBoxAction.setEnabled(True)
+                    self.spinBoxAction2.setEnabled(True)
+                    self.lockBoxAction.setEnabled(True)
+                    self.lockBoxAction2.setEnabled(True)
                     QObject.connect(layer, SIGNAL("editingStopped()"), self.toggle)
                     QObject.disconnect(layer, SIGNAL("editingStarted()"), self.toggle)
 
@@ -117,7 +144,11 @@ class ImprovedPolygonCapturing:
 
                 else:
                     self.capturePolygonAction.setEnabled(False)
+                    self.absBoxAction.setEnabled(False)
                     self.spinBoxAction.setEnabled(False)
+                    self.spinBoxAction2.setEnabled(False)
+                    self.lockBoxAction.setEnabled(False)
+                    self.lockBoxAction2.setEnabled(False)
                     self.stop()
                     QObject.connect(layer, SIGNAL("editingStarted()"), self.toggle)
                     QObject.disconnect(layer, SIGNAL("editingStopped()"), self.toggle)
@@ -129,7 +160,7 @@ class ImprovedPolygonCapturing:
         capture polygon action is checked. Connect to the deactivate signal.
         """
         # This is the coordinates capture tool
-        self.tool = QgsMapToolCapturePolygon(self.iface, self.spinBox, self.isPolygon)
+        self.tool = QgsMapToolCapturePolygon(self.iface, self.absBox, self.spinBox, self.spinBoxAngle, self.lockBox, self.lockBoxAngle, self.isPolygon)
 
         # Save the previous selected tool and set the new capture coordinate tool
         self.previous = self.canvas.mapTool()
