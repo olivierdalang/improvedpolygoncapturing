@@ -334,11 +334,7 @@ class QgsMapToolCapturePolygon(QgsMapTool):
             prediffY = lastPt.y() - preLastPt.y()
             lastbeta = math.atan2(prediffY, prediffX)
         # Calculate the distance
-        if angleLock:
-            #TODO : if the angle is locked, the distance should be the projection and not the true distance
-            distance = math.sqrt( diffX*diffX + diffY*diffY )
-        else:
-            distance = math.sqrt( diffX*diffX + diffY*diffY )
+        
 
         #TODO : ANGLE ABS ( absBox )
         #TEST !
@@ -347,11 +343,15 @@ class QgsMapToolCapturePolygon(QgsMapTool):
                 beta = angle/180.0*math.pi
             else:
                 beta = lastbeta + angle/180.0*math.pi
+
+            distance = self.projectedDistance( lastPt, pt, beta )
         else:
             if absBox:
                 self.spinBoxAngle.setValue(beta/math.pi*180.0)
             else:
                 self.spinBoxAngle.setValue( (beta-lastbeta)/math.pi*180.0  )
+
+            distance = math.sqrt( diffX*diffX + diffY*diffY )
 
         if distanceLock:
             distance = self.spinBox.value()
@@ -367,6 +367,31 @@ class QgsMapToolCapturePolygon(QgsMapTool):
             return calcPt
         else:
             return pt
+
+    def projectedDistance(self, lastPt, mousePt, angle):
+
+
+        ang = angle#/180.0*math.pi
+
+        projVect = QVector2D(math.cos(ang), math.sin(ang))
+        #projVect.normalize()
+        mouseVect = QVector2D(mousePt.x()-lastPt.x(),mousePt.y()-lastPt.y())
+
+        return QVector2D.dotProduct(mouseVect,projVect)
+
+
+        #pa = lastPt
+        #pb = QPoint( lastPt.x()+math.cos(ang), lastPt.y()+math.sin(ang))
+
+        #m = (pb.y() - pa.y()) / (pb.x() - pa.x())
+        #b = pa.y() - (m * pa.x())
+    
+        #x = (m * mousePt.y() + mousePt.x() - m * b) / (m * m + 1)
+        #y = (m * m * mousePt.y() + m * mousePt.x() + b) / (m * m + 1)
+
+        #return math.sqrt( (x-pa.x())*(x-pa.x()) + (y-pa.y())*(y-pa.y()) )
+
+
 
     def snapToBackgroundLayers(self, qgspoint):
         """

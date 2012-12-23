@@ -14,6 +14,9 @@ The third checkbox must be checked if the angle is entered in absolute value (if
 # Usage #
 Use tab and shift-tab to navigate between the editfields and the checkboxes (and space to toggle the checkboxes).
 
+# Projection #
+When the angle is locked, the distance is set to the projection of the locked angle, so it is easy to align a shape orthogonally to a point.
+
 
 Todo
 ----
