@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="/plugins/improvedpolygoncapturing">
+    <file>mActionCapturePolygon.png</file>
+  </qresource>
+  <qresource prefix="/plugins/improvedpolygoncapturing">
+    <file>mActionCaptureLine.png</file>
+  </qresource>
+</RCC>
