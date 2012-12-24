@@ -83,19 +83,34 @@ class ImprovedPolygonCapturing:
         self.spinBoxAngle.setDecimals(8)
         self.spinBoxAngle.setMinimum(-360.0)
         self.spinBoxAngle.setMaximum(360.0)
-        self.iface.digitizeToolBar().addWidget( QLabel('dist') )
+        self.spinBoxAngle.setSuffix(unichr(176))
+        self.iface.digitizeToolBar().addWidget( QLabel('D') )
         self.spinBoxAction = self.iface.digitizeToolBar().addWidget(self.spinBox)
         self.lockBoxAction = self.iface.digitizeToolBar().addWidget(self.lockBox)
         self.spinBoxAction.setEnabled(False)
         self.lockBoxAction.setEnabled(False)
-        self.iface.digitizeToolBar().addWidget( QLabel('angle') )
+        self.iface.digitizeToolBar().addWidget( QLabel('A') )
         self.spinBoxAction2 = self.iface.digitizeToolBar().addWidget(self.spinBoxAngle)
         self.lockBoxAction2 = self.iface.digitizeToolBar().addWidget(self.lockBoxAngle)
-        self.iface.digitizeToolBar().addWidget( QLabel('abs') )
+        #self.iface.digitizeToolBar().addWidget( QLabel('abs') )
         self.absBoxAction = self.iface.digitizeToolBar().addWidget(self.absBox)
         self.spinBoxAction2.setEnabled(False)
         self.lockBoxAction2.setEnabled(False)
         self.absBoxAction.setEnabled(False)
+
+        self.spinBox.setToolTip('Distance (alt+1)')
+        self.spinBoxAngle.setToolTip('Angle (alt+2)')
+        self.lockBox.setToolTip('Lock distance (shift+alt+1)')
+        self.lockBoxAngle.setToolTip('Lock angle (shift+alt+2)')
+        self.absBox.setToolTip('Absolute angle')
+        shortcut = QShortcut(QKeySequence("alt+1"), self.iface.mapCanvas())
+        QObject.connect(shortcut, SIGNAL("activated()"), self.focusDist)
+        shortcut = QShortcut(QKeySequence("alt+2"), self.iface.mapCanvas())
+        QObject.connect(shortcut, SIGNAL("activated()"), self.focusAngle)
+        shortcut = QShortcut(QKeySequence("shift+alt+1"), self.iface.mapCanvas())
+        QObject.connect(shortcut, SIGNAL("activated()"), self.focusLockDist)
+        shortcut = QShortcut(QKeySequence("shift+alt+2"), self.iface.mapCanvas())
+        QObject.connect(shortcut, SIGNAL("activated()"), self.focusLockAngle)
 
         # Connect to signals for button behaviour
         QObject.connect(self.capturePolygonAction, SIGNAL("triggered()"), self.start)
@@ -103,6 +118,15 @@ class ImprovedPolygonCapturing:
     
         # This is the coordinates capture tool
         self.tool = QgsMapToolCapturePolygon(self.iface, self.absBox, self.spinBox, self.spinBoxAngle, self.lockBox, self.lockBoxAngle, self.isPolygon)
+
+    def focusAngle(self):
+        self.spinBoxAngle.setFocus()
+    def focusDist(self):
+        self.spinBox.setFocus()
+    def focusLockAngle(self):
+        self.lockBoxAngle.toggle()
+    def focusLockDist(self):
+        self.lockBox.toggle()
 
     def unload(self):
         """
