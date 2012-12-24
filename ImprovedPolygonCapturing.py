@@ -121,8 +121,10 @@ class ImprovedPolygonCapturing:
 
     def focusAngle(self):
         self.spinBoxAngle.setFocus()
+        self.spinBoxAngle.selectAll()
     def focusDist(self):
         self.spinBox.setFocus()
+        self.spinBox.selectAll()
     def focusLockAngle(self):
         self.lockBoxAngle.toggle()
     def focusLockDist(self):
