@@ -18,12 +18,16 @@ When the angle is locked, the distance is set to the projection of the locked an
 
 ## Todo ##
 
-### Still to do ###
-- Is it possible to use the same concept but for every tool ? The same input method could be usefull also for points layers and for advanced digitizine (split, reshape, ...). Maybe the plugin could become a general input assistance plugin instead of being a specific tool. But it seems impossible to simulate a mouse click at exact map coordinates...
+### Short term ###
 - Highlight snapping
 - Think about if the angle/distance should remain locked or not after each new point
 - Update the display (rubberband) when the spinboxes are changed
 - Update documentation
+- Snapping to the currently editted feature would be useful (especially for "closing" 90° polygons with the projection feature)
+- Update translation
+
+### Long term ###
+- Is it possible to use the same concept but for every tool ? The same input method could be usefull also for points layers and for advanced digitizine (split, reshape, ...). Maybe the plugin could become a general input assistance plugin instead of being a specific tool. But it seems impossible to simulate a mouse click at exact map coordinates...
 
 ### Done ###
 - Shortcuts : Is it possible to set shortcuts to give the focus to the right editfield ? (for instance : d for distance, a for angle, shift-d to lock the distance, shift-a to lock the angle)
