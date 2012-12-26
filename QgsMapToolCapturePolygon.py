@@ -7,6 +7,8 @@ Improved polygon capturing - add linesegments with preset length.
 begin                : 2010-06-28 
 copyright            : (C) 2010 by Adrian Weber
 email                : adrian.weber@cde.unibe.ch 
+contributor          : Olivier Dalang ( olivier.dalang@gmail.com )
+git repo             : https://github.com/redlegoreng/improvedpolygoncapturing2
  ***************************************************************************/
 
 /***************************************************************************
