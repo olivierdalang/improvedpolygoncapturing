@@ -69,10 +69,10 @@ class ImprovedPolygonCapturing:
 
         # Create a dock widget for the input fields (note that the dockwidget is only added to the mainWindow when the tool is activated)
         self.dockWidget = QDockWidget("Improved Polygon Capturing")
-        self.dockWidget.setFeatures(QDockWidget.DockWidgetMovable)
+        self.dockWidget.setFeatures(QDockWidget.DockWidgetMovable|QDockWidget.DockWidgetFloatable)
         self.dockLayout = QGridLayout()
         self.dockLayout.setColumnStretch( 1, 10 )
-        self.dockLayout.setColumnStretch( 3, 10 )
+        self.dockLayout.setRowStretch( 3, 10 )
         dockWidgetMainWidget = QWidget()
         self.dockWidget.setWidget( dockWidgetMainWidget )
         dockWidgetMainWidget.setLayout(self.dockLayout)
