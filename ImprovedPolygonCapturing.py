@@ -67,79 +67,101 @@ class ImprovedPolygonCapturing:
         self.capturePolygonAction.setEnabled(False)
         self.iface.digitizeToolBar().addAction(self.capturePolygonAction)
 
-        # Create a spin box to enter the distance and add it the to digitize toolbar
-        self.absBox = QCheckBox(self.iface.mainWindow())
-        self.spinBox = QDoubleSpinBox(self.iface.mainWindow())
-        self.spinBoxAngle = QDoubleSpinBox(self.iface.mainWindow())
-        self.lockBox = QCheckBox(self.iface.mainWindow())
-        self.lockBoxAngle = QCheckBox(self.iface.mainWindow())
-        # The inital value is 10
-        self.spinBox.setValue(10.00)
+        # Create a dock widget for the input fields (note that the dockwidget is only added to the mainWindow when the tool is activated)
+        self.dockWidget = QDockWidget("Improved Polygon Capturing")
+        self.dockWidget.setFeatures(QDockWidget.DockWidgetMovable)
+        self.dockLayout = QGridLayout()
+        self.dockLayout.setColumnStretch( 1, 10 )
+        self.dockLayout.setColumnStretch( 3, 10 )
+        dockWidgetMainWidget = QWidget()
+        self.dockWidget.setWidget( dockWidgetMainWidget )
+        dockWidgetMainWidget.setLayout(self.dockLayout)
+        self.iface.mainWindow().addDockWidget(Qt.LeftDockWidgetArea, self.dockWidget)
+        self.dockWidget.hide()
+
+        # Create and setup the input elements
+        self.spinBoxDist = QDoubleSpinBox()
+        self.spinBoxDist.setValue(10.00)
+        self.spinBoxDist.setDecimals(8)
+        self.spinBoxDist.setMinimum(-9999999.999)
+        self.spinBoxDist.setMaximum(9999999.999)
+        self.lockBoxDist = QCheckBox()
+
+        self.spinBoxAngle = QDoubleSpinBox()
         self.spinBoxAngle.setValue(0.00)
-        # Set the minimum to zero, zero means that the distance is not considered
-        self.spinBox.setDecimals(8)
-        self.spinBox.setMinimum(0.000)
-        self.spinBox.setMaximum(9999.999)
         self.spinBoxAngle.setDecimals(8)
         self.spinBoxAngle.setMinimum(-360.0)
         self.spinBoxAngle.setMaximum(360.0)
         self.spinBoxAngle.setSuffix(unichr(176))
-        self.iface.digitizeToolBar().addWidget( QLabel('D') )
-        self.spinBoxAction = self.iface.digitizeToolBar().addWidget(self.spinBox)
-        self.lockBoxAction = self.iface.digitizeToolBar().addWidget(self.lockBox)
-        self.spinBoxAction.setEnabled(False)
-        self.lockBoxAction.setEnabled(False)
-        self.iface.digitizeToolBar().addWidget( QLabel('A') )
-        self.spinBoxAction2 = self.iface.digitizeToolBar().addWidget(self.spinBoxAngle)
-        self.lockBoxAction2 = self.iface.digitizeToolBar().addWidget(self.lockBoxAngle)
-        #self.iface.digitizeToolBar().addWidget( QLabel('abs') )
-        self.absBoxAction = self.iface.digitizeToolBar().addWidget(self.absBox)
-        self.spinBoxAction2.setEnabled(False)
-        self.lockBoxAction2.setEnabled(False)
-        self.absBoxAction.setEnabled(False)
+        self.lockBoxAngle = QCheckBox()
+        self.absBox = QCheckBox()
 
-        self.spinBox.setToolTip('Distance (alt+1)')
+        # Layout the input elements
+        self.dockLayout.addWidget( QLabel('Lk'),0,2 )
+        self.dockLayout.addWidget( QLabel('Abs'),0,3 )
+        self.dockLayout.addWidget( QLabel('Distance'),1,0 )
+        self.dockLayout.addWidget(self.spinBoxDist,1,1)
+        self.dockLayout.addWidget(self.lockBoxDist,1,2)
+        self.dockLayout.addWidget( QLabel('Angle'),2,0 )
+        self.dockLayout.addWidget(self.spinBoxAngle,2,1)
+        self.dockLayout.addWidget(self.lockBoxAngle,2,2)
+        self.dockLayout.addWidget(self.absBox,2,3)
+
+        # Create tooltips
+        self.spinBoxDist.setToolTip('Distance (alt+1)')
         self.spinBoxAngle.setToolTip('Angle (alt+2)')
-        self.lockBox.setToolTip('Lock distance (shift+alt+1)')
+        self.lockBoxDist.setToolTip('Lock distance (shift+alt+1)')
         self.lockBoxAngle.setToolTip('Lock angle (shift+alt+2)')
-        self.absBox.setToolTip('Absolute angle')
-        shortcut = QShortcut(QKeySequence("alt+1"), self.iface.mapCanvas())
-        QObject.connect(shortcut, SIGNAL("activated()"), self.focusDist)
-        shortcut = QShortcut(QKeySequence("alt+2"), self.iface.mapCanvas())
-        QObject.connect(shortcut, SIGNAL("activated()"), self.focusAngle)
-        shortcut = QShortcut(QKeySequence("shift+alt+1"), self.iface.mapCanvas())
-        QObject.connect(shortcut, SIGNAL("activated()"), self.focusLockDist)
-        shortcut = QShortcut(QKeySequence("shift+alt+2"), self.iface.mapCanvas())
-        QObject.connect(shortcut, SIGNAL("activated()"), self.focusLockAngle)
+        self.absBox.setToolTip('Absolute angle (shift+alt+3')
+
+        # Create shortcuts
+        QObject.connect( QShortcut(QKeySequence("alt+1"), self.iface.mapCanvas()), SIGNAL("activated()"), self.focusDist)
+        QObject.connect( QShortcut(QKeySequence("alt+2"), self.iface.mapCanvas()), SIGNAL("activated()"), self.focusAngle)
+        QObject.connect( QShortcut(QKeySequence("shift+alt+1"), self.iface.mapCanvas()), SIGNAL("activated()"), self.toggleLockDist)
+        QObject.connect( QShortcut(QKeySequence("shift+alt+2"), self.iface.mapCanvas()), SIGNAL("activated()"), self.toggleLockAngle)
+        QObject.connect( QShortcut(QKeySequence("shift+alt+3"), self.iface.mapCanvas()), SIGNAL("activated()"), self.toggleAbsAngle)
 
         # Connect to signals for button behaviour
         QObject.connect(self.capturePolygonAction, SIGNAL("triggered()"), self.start)
         QObject.connect(self.iface, SIGNAL("currentLayerChanged(QgsMapLayer*)"), self.toggle)
     
         # This is the coordinates capture tool
-        self.tool = QgsMapToolCapturePolygon(self.iface, self.absBox, self.spinBox, self.spinBoxAngle, self.lockBox, self.lockBoxAngle, self.isPolygon)
+        self.tool = QgsMapToolCapturePolygon(self.iface, self.absBox, self.spinBoxDist, self.spinBoxAngle, self.lockBoxDist, self.lockBoxAngle, self.isPolygon)
 
     def focusAngle(self):
+        """
+        Gives the focus to angle input (used for by the shortcut action)
+        """
         self.spinBoxAngle.setFocus()
         self.spinBoxAngle.selectAll()
     def focusDist(self):
-        self.spinBox.setFocus()
-        self.spinBox.selectAll()
-    def focusLockAngle(self):
+        """
+        Gives the focus to distance input (used for by the shortcut action)
+        """
+        self.spinBoxDist.setFocus()
+        self.spinBoxDist.selectAll()
+    def toggleLockAngle(self):
+        """
+        Toggles the angle lock (used for by the shortcut action)
+        """
         self.lockBoxAngle.toggle()
-    def focusLockDist(self):
-        self.lockBox.toggle()
+    def toggleLockDist(self):
+        """
+        Toggles the distance lock (used for by the shortcut action)
+        """
+        self.lockBoxDist.toggle()
+    def toggleAbsAngle(self):
+        """
+        Toggles the distance lock (used for by the shortcut action)
+        """
+        self.absBox.toggle()
 
     def unload(self):
         """
         Remove the plugin menu item and icon from the toolbar
         """
+        self.dockWidget = None
         self.iface.digitizeToolBar().removeAction(self.capturePolygonAction)
-        self.iface.digitizeToolBar().removeAction(self.absBoxAction)
-        self.iface.digitizeToolBar().removeAction(self.spinBoxAction)
-        self.iface.digitizeToolBar().removeAction(self.spinBoxAction2)
-        self.iface.digitizeToolBar().removeAction(self.lockBoxAction)
-        self.iface.digitizeToolBar().removeAction(self.lockBoxAction2)
 
     def toggle(self):
         layer = self.canvas.currentLayer()
@@ -151,11 +173,6 @@ class ImprovedPolygonCapturing:
             if layer.geometryType() == QGis.Polygon or layer.geometryType() == QGis.Line:
                 if layer.isEditable():
                     self.capturePolygonAction.setEnabled(True)
-                    self.absBoxAction.setEnabled(True)
-                    self.spinBoxAction.setEnabled(True)
-                    self.spinBoxAction2.setEnabled(True)
-                    self.lockBoxAction.setEnabled(True)
-                    self.lockBoxAction2.setEnabled(True)
                     QObject.connect(layer, SIGNAL("editingStopped()"), self.toggle)
                     QObject.disconnect(layer, SIGNAL("editingStarted()"), self.toggle)
 
@@ -170,11 +187,6 @@ class ImprovedPolygonCapturing:
 
                 else:
                     self.capturePolygonAction.setEnabled(False)
-                    self.absBoxAction.setEnabled(False)
-                    self.spinBoxAction.setEnabled(False)
-                    self.spinBoxAction2.setEnabled(False)
-                    self.lockBoxAction.setEnabled(False)
-                    self.lockBoxAction2.setEnabled(False)
                     self.stop()
                     QObject.connect(layer, SIGNAL("editingStarted()"), self.toggle)
                     QObject.disconnect(layer, SIGNAL("editingStopped()"), self.toggle)
@@ -182,20 +194,19 @@ class ImprovedPolygonCapturing:
     def start(self):
         """
         Starts capturing a new polygon. The current map tool is set to
-        QgsMapToolCapturePolygon, the focus is given to the spin box and the
+        QgsMapToolCapturePolygon, the dockwidget is shown focus is given to the spin box and the
         capture polygon action is checked. Connect to the deactivate signal.
         """
         # This is the coordinates capture tool
-        self.tool = QgsMapToolCapturePolygon(self.iface, self.absBox, self.spinBox, self.spinBoxAngle, self.lockBox, self.lockBoxAngle, self.isPolygon)
+        self.tool = QgsMapToolCapturePolygon(self.iface, self.absBox, self.spinBoxDist, self.spinBoxAngle, self.lockBoxDist, self.lockBoxAngle, self.isPolygon)
 
         # Save the previous selected tool and set the new capture coordinate tool
         self.previous = self.canvas.mapTool()
         self.canvas.setMapTool(self.tool)
 
-        # Set focus to double spin box to convienient data entry
-        self.spinBox.setFocus()
-        self.spinBox.selectAll()
-
+        # Show the dockWidget, give it the focus, and display the tool as checked
+        self.dockWidget.show()
+        self.focusDist()
         self.capturePolygonAction.setChecked(True)
 
         # Stop the tool as soon as the QgsMapToolCapturePolygon is deactivated
@@ -203,9 +214,13 @@ class ImprovedPolygonCapturing:
 
     def stop(self):
         """
-        Stops the tool, i.e. the action in the toolbar is unchecked and the
+        Stops the tool, i.e. the action in the toolbar is unchecked, the dockwidget is hidden and the
         map canvas is cleared from the temporary markers and rubberband.
         """
+
+        self.dockWidget.hide()
+
         self.capturePolygonAction.setChecked(False)
+
         self.tool.clearMapCanvas()
         QObject.disconnect(self.tool, SIGNAL("deactivated()"), self.stop)

@@ -22,7 +22,7 @@ email                : adrian.weber@cde.unibe.ch
 def name(): 
   return "Improved Polygon Capturing" 
 def description():
-  return "Add linesegments with preset length while digitizing polygons"
+  return "Add linesegments with preset length and angle while digitizing polygons or lines"
 def version(): 
   return "Version 1.0"
 def qgisMinimumVersion():

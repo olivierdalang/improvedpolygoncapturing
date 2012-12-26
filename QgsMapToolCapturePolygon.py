@@ -30,14 +30,14 @@ class QgsMapToolCapturePolygon(QgsMapTool):
     QgsMapTool subclass to capture polygon with preset edge length and add
     it as new features to the current layer.
     """
-    def __init__(self, iface, absBox, spinBox, spinBoxAngle, lockBox, lockBoxAngle, isPolygon):
+    def __init__(self, iface, absBox, spinBoxDist, spinBoxAngle, lockBoxDist, lockBoxAngle, isPolygon):
         QgsMapTool.__init__(self, iface.mapCanvas())
         self.iface = iface
         self.canvas = iface.mapCanvas()
         self.absBox = absBox
-        self.spinBox = spinBox
+        self.spinBoxDist = spinBoxDist
         self.spinBoxAngle = spinBoxAngle
-        self.lockBox = lockBox
+        self.lockBoxDist = lockBoxDist
         self.lockBoxAngle = lockBoxAngle
         # If true the new geometry is a polygon else if false it's a line
         self.isPolygon = isPolygon
@@ -140,25 +140,20 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         @param {QgsPoint} pt Position of the mouse click in map coordinates
         """
     
-        # Get the distance from the UI
+        # Get the values from the UI
         absBox = self.absBox.isChecked()
-        distance = self.spinBox.value()
+        distance = self.spinBoxDist.value()
         angle = self.spinBoxAngle.value()
-        distanceLock = self.lockBox.isChecked()
+        distanceLock = self.lockBoxDist.isChecked()
         angleLock = self.lockBoxAngle.isChecked()
 
         # Coordinates of mouse click
         newPt = None
 
-        # If the capture list contains already vertices, then calculate the new position
-        # based on the distance (and considering snapping)
+        # If the capture list contains already vertices, then calculate the new position based on the distance (and considering snapping)
         if len(self.captureList) > 0:
             newPt = self.calculatePointPos(pt, absBox, distance, angle, distanceLock, angleLock)
-           
-
-        # If this is the first point add a new point to the
-        # capture list at the current mouse position considering
-        # the default snapping behaviour.
+        # If this is the first point add a new point to the capture list at the current mouse position considering the default snapping behaviour.
         else:
             snappedPt = self.snapToBackgroundLayers(pt)
             newPt = QgsPoint(snappedPt.x(), snappedPt.y())
@@ -175,8 +170,8 @@ class QgsMapToolCapturePolygon(QgsMapTool):
 
         # Give the focus back to the spin box to allow a convenient distance
         # re-entry
-        self.spinBox.setFocus()
-        self.spinBox.selectAll()
+        self.spinBoxDist.setFocus()
+        self.spinBoxDist.selectAll()
 
     def moveVertex(self, pt):
         """
@@ -185,11 +180,11 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         polygon preview.
         @param {QgsPoint} pt Mouse pointer position in map coordinates
         """
-        # Get the distance from the UI
+        # Get the values from the UI
         absBox = self.absBox.isChecked()
-        distance = self.spinBox.value()
+        distance = self.spinBoxDist.value()
         angle = self.spinBoxAngle.value()
-        distanceLock = self.lockBox.isChecked()
+        distanceLock = self.lockBoxDist.isChecked()
         angleLock = self.lockBoxAngle.isChecked()
 
         # Coordinates of mouse move
@@ -302,69 +297,68 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         # Clear and refresh the canvas in any case
         self.clearMapCanvas()
 
-    def calculatePointPos(self, pt, absBox, distance, angle, distanceLock, angleLock):
+    def calculatePointPos(self, pt, absBox, inputDistance, inputAngle, distanceLock, angleLock):
         """
         Calculate a new point based on the distance from the spin box and the snapping
-        properties. Snapping has priority to the distance! That means first the new
-        position is calculated, then the project snapping properties are considered.
-        If the user enters zero in the spin box, then the new point is at the mouse
-        pointer, i.e. this method is just considering the snapping properties.
+        properties. Snapping has priority over actual mouse position but NOT over locked numerical values.
         The distance calculation is done with plain trigonometry! Thus it is not recommended
         to use it with unprojected systems like EPSG:4326!
         @param {QgsPoint} pt Mouse pointer in map coordinates
         @param {double} distance Preset length of the new edge in map units
         """
 
-        #TODO : CALCULATE ANGLE
-        pt = self.snapToBackgroundLayers(pt)
-
-        # Take the second last point, since the last one is just for the interactive movement
-        lastPt = self.rubberBand.getPoint(0, self.rubberBand.numberOfVertices()-2)
-        # Attention! The angle and new point are calculated in plain trigonmetry!
-        # Depending on the projection this is not very accurate!
-        diffX = pt.x() - lastPt.x()
-        diffY = pt.y() - lastPt.y()
-        # Calculate angle
-        beta = math.atan2(diffY, diffX)
-        # Calculate the previous angle (for relative angle calulations)
-        lastbeta = 0
-        if self.rubberBand.numberOfVertices() > 2:
-            preLastPt = self.rubberBand.getPoint(0, self.rubberBand.numberOfVertices()-3)
-            prediffX = lastPt.x() - preLastPt.x()
-            prediffY = lastPt.y() - preLastPt.y()
-            lastbeta = math.atan2(prediffY, prediffX)
-        # Calculate the distance
+        # Actual input point
+        pt = self.snapToBackgroundLayers(pt)    #Sthe actual input point is the snapped point
+        # Last input point
+        lastPt = self.rubberBand.getPoint(0, self.rubberBand.numberOfVertices()-2) # Take the second last point, since the last one is just for the interactive movement
         
+        newAngle = 0 # This will store the computed angle
+        newDist = 10 # This will store the computed distance
 
-        #TODO : ANGLE ABS ( absBox )
-        #TEST !
+       
+        if not absBox:
+            # If the angle is not absolute, we have to compute the angle of the last entered line segment
+            if self.rubberBand.numberOfVertices() > 2:
+                secondLastPt = self.rubberBand.getPoint(0, self.rubberBand.numberOfVertices()-3)
+                lastAngle = math.atan2(lastPt.y() - secondLastPt.y(), lastPt.x() - secondLastPt.x())
+            else:
+                #If there is no last entered line segment, we start we a 0 angle
+                lastAngle = 0
+
+        
         if angleLock:
+            # If the angle is locked
             if absBox:
-                beta = angle/180.0*math.pi
+                newAngle = inputAngle/180.0*math.pi # We compute the new angle based on the input angle (ABSOLUTE)
             else:
-                beta = lastbeta + angle/180.0*math.pi
-
-            distance = self.projectedDistance( lastPt, pt, beta )
+                newAngle = lastAngle + inputAngle/180.0*math.pi # We compute the new angle based on the input angle (RELATIVE)
         else:
+            # If the angle is not locked
+            newAngle = math.atan2((pt.y()-lastPt.y()), pt.x()-lastPt.x()) # We simply set the new angle to the current angle
             if absBox:
-                self.spinBoxAngle.setValue(beta/math.pi*180.0)
+                self.spinBoxAngle.setValue(newAngle/math.pi*180.0) # Update the spinBox to reflect the current distance
             else:
-                self.spinBoxAngle.setValue( (beta-lastbeta)/math.pi*180.0  )
+                self.spinBoxAngle.setValue( (newAngle-lastAngle)/math.pi*180.0  ) # Update the spinBox to reflect the current distance
 
-            distance = math.sqrt( diffX*diffX + diffY*diffY )
 
         if distanceLock:
-            distance = self.spinBox.value()
+            # If the distance is locked
+            newDist = inputDistance # We simply set the new distance to the input distance
         else:
-            self.spinBox.setValue(distance)
-            #distance = math.sqrt( diffX*diffX + diffY*diffY )
+             # If the distance is not locked
+            if angleLock:
+                newDist = self.projectedDistance( lastPt, pt, newAngle ) # We simply set the new distance to the current distance
+            else:
+                newDist = math.sqrt( (pt.x()-lastPt.x())*(pt.x()-lastPt.x()) + (pt.y()-lastPt.y())*(pt.y()-lastPt.y()) ) # Or to its projection if the angle is locked
+            
+            self.spinBoxDist.setValue(newDist) # Update the spinBox to reflect the current distance
+
 
         if distanceLock or angleLock:
-            # Calculate new point
-            a = math.cos(beta) * distance
-            b = math.sin(beta) * distance
-            calcPt = QgsPoint(lastPt.x() + a, lastPt.y() + b)
-            return calcPt
+            # We only need to do some calulation if either the distance or the angle is locked
+            a = math.cos(newAngle) * newDist
+            b = math.sin(newAngle) * newDist
+            return QgsPoint(lastPt.x() + a, lastPt.y() + b)
         else:
             return pt
 
