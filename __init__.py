@@ -24,7 +24,7 @@ def name():
 def description():
   return "Add linesegments with preset length and angle while digitizing polygons or lines"
 def version(): 
-  return "Version 1.0"
+  return "Version 1.1"
 def qgisMinimumVersion():
   return "1.0"
 def classFactory(iface): 

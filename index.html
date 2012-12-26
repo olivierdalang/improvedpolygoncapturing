@@ -56,28 +56,20 @@
 
         <h2>How to use</h2>
         <p>
-            The plugin adds a new icon and a spin box to the digitizing toolbar.
-            The icons are derived from the <i>gis</i> icon theme and look like:
+            The plugin adds a new icon to the digitizing toolbar.
         </p>
-        <table width="420">
-            <tr><td>Editing a polygon layer:</td><td>Editing a line layer:</td></tr>
-            <tr align="center"><td>
-                    <img src="mActionCapturePolygon.png" alt="Improved polygon capturing icon">
-                </td>
-                <td>
-                    <img src="mActionCaptureLine.png" alt="Improved polyline capturing icon">
-                </td>
-            </tr>
-        </table>
-        <table width="420">
-            <tr><td>The digitizing toolbar with added plugin:<td></tr>
-            <tr><td><img src="digitizeToolbar.png" alt="Digitize Toolbar"/><td></tr>
-        </table>
         <p>
-            Select a polygon or a line layer and toggle editing. After setting
-            the first vertex the next vertices are added in the direction of the
-            mouse pointer with the predefined length set in the spin box. Similar
-            to the standard editing tools left
+            Select a polygon or a line layer and toggle editing by clicking on <img src="mActionCapturePolygon.png" alt="Improved polygon capturing icon"> (for a polygon layer) or on <img src="mActionCaptureLine.png" alt="Improved polyline capturing icon"> (for a line layer).
+        </p>
+        <p>
+            The following Dockable palette will appear : <br/>
+            <img src="pluginDockWidget.png" alt="Improved polygon capturing palette screenshot">
+        </p>
+        <p>
+            From now on, you can enter the distance or the angle numerically in the edit fields. You have to check the "Lock" checkbox to actually lock the distance and/or the angle.
+        </p>
+        <p>
+            Similar to the standard editing tools left
             mouse clicks add a new vertex while right mouse clicks finish the
             geometry.<br>After finishing a new geometry the feature form opens and
             attributes can be entered.
@@ -89,8 +81,6 @@
             While digitizing new vertices the snapping properties from the current
             project settings are considered as well as the avoiding intersection
             properties.<br/>
-            If the distance in the spin box is set to 0 (zero), new vertices
-            are set at the mouse position.
         </p>
 
         <h2>Caveats</h2>
@@ -99,12 +89,14 @@
             is not recommended to use it in unprojected systems like EPSG:4326.
         </p>
         <h2>History</h2>
-        Improved polygon capturing plugin has been developed in June 2010 for a
-        <a href="http://www.gtz.de/en/weltweit/asien-pazifik/30296.htm">
-            land management and registration
-        </a>project in the Lao PDR. It is used to digitize land parcels with known edge lengths
-        from high-resolution satellite images. The parcel edges have been measured
-        a priori in the field.
+        <p>
+            Improved polygon capturing plugin has been initially developed in June 2010 for a
+            <a href="http://www.gtz.de/en/weltweit/asien-pazifik/30296.htm">
+                land management and registration
+            </a>project in the Lao PDR. It is used to digitize land parcels with known edge lengths
+            from high-resolution satellite images. The parcel edges have been measured
+            a priori in the field.
+        </p>
         <ul>
             <li>
                 Version 0.8 (June 2010): first published version
@@ -117,9 +109,13 @@
                 Version 1.0 (July 2011): feature form opens in editing
                 mode after finishing a new feature
             </li>
+            <li>
+                Version 1.1 (December 2012): added support for angle and updated interface
+            </li>
         </ul>
         <p align="right">
             Developed and maintained by <a href="http://www.webrian.ch">Adrian Weber</a>
+            Contributed by Olivier Dalang
         </p>
     </body>
 </html>

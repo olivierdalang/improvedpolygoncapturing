@@ -23,6 +23,7 @@ When the angle is locked, the distance is set to the projection of the locked an
 - Highlight snapping
 - Think about if the angle/distance should remain locked or not after each new point
 - Update the display (rubberband) when the spinboxes are changed
+- Update documentation
 
 ### Done ###
 - Shortcuts : Is it possible to set shortcuts to give the focus to the right editfield ? (for instance : d for distance, a for angle, shift-d to lock the distance, shift-a to lock the angle)
