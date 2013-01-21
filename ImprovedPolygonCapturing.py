@@ -27,6 +27,7 @@ from PyQt4.QtGui import *
 from QgsMapToolCapturePolygon import QgsMapToolCapturePolygon
 from qgis.core import *
 from qgis.gui import *
+from AboutDialog import AboutDialog
 import resources
 
 class ImprovedPolygonCapturing: 
@@ -69,8 +70,14 @@ class ImprovedPolygonCapturing:
         self.capturePolygonAction.setEnabled(False)
         self.iface.digitizeToolBar().addAction(self.capturePolygonAction)
 
+        # Create the online help action
+        self.helpAction = QAction( QIcon(":/plugins/improvedpolygoncapturing/ressources/about.png"), u"Help", self.iface.mainWindow())
+        QObject.connect(self.helpAction, SIGNAL("triggered()"), self.showHelp)
+        self.iface.addPluginToMenu(u"&Improved Polygon Capturing", self.helpAction)
+
         # Create a dock widget for the input fields (note that the dockwidget is only added to the mainWindow when the tool is activated)
         self.dockWidget = QDockWidget("Improved Polygon Capturing")
+
         self.dockWidget.setFeatures(QDockWidget.DockWidgetMovable|QDockWidget.DockWidgetFloatable)
         self.dockLayout = QGridLayout()
         self.dockLayout.setColumnStretch( 1, 10 )
@@ -88,6 +95,10 @@ class ImprovedPolygonCapturing:
         self.spinBoxDist.setMinimum(-9999999.999)
         self.spinBoxDist.setMaximum(9999999.999)
         self.lockBoxDist = QCheckBox()
+        #self.lockBoxDist.setIcon( QIcon(":/plugins/improvedpolygoncapturing/ressources/lock.png") )
+        self.lockBoxDist.setStyleSheet( "QCheckBox::indicator:checked{ image: url(:/plugins/improvedpolygoncapturing/ressources/lock.png); }" )
+
+        
 
         self.spinBoxAngle = QDoubleSpinBox()
         self.spinBoxAngle.setValue(0.00)
@@ -96,25 +107,26 @@ class ImprovedPolygonCapturing:
         self.spinBoxAngle.setMaximum(360.0)
         self.spinBoxAngle.setSuffix(unichr(176))
         self.lockBoxAngle = QCheckBox()
-        self.absBox = QCheckBox()
+        self.lockBoxAngle.setStyleSheet( "QCheckBox::indicator:checked{ image: url(:/plugins/improvedpolygoncapturing/ressources/lock.png); }" )
+        self.relBox = QCheckBox()
+        self.relBox.setStyleSheet( "QCheckBox::indicator:checked{ image: url(:/plugins/improvedpolygoncapturing/ressources/delta.png); }" )
+        self.relBox.setChecked(True)
 
         # Layout the input elements
-        self.dockLayout.addWidget( QLabel('Lk'),0,2 )
-        self.dockLayout.addWidget( QLabel('Abs'),0,3 )
-        self.dockLayout.addWidget( QLabel('Distance'),1,0 )
-        self.dockLayout.addWidget(self.spinBoxDist,1,1)
-        self.dockLayout.addWidget(self.lockBoxDist,1,2)
-        self.dockLayout.addWidget( QLabel('Angle'),2,0 )
-        self.dockLayout.addWidget(self.spinBoxAngle,2,1)
-        self.dockLayout.addWidget(self.lockBoxAngle,2,2)
-        self.dockLayout.addWidget(self.absBox,2,3)
+        self.dockLayout.addWidget( QLabel('Distance'),0,0 )
+        self.dockLayout.addWidget(self.spinBoxDist,0,1)
+        self.dockLayout.addWidget(self.lockBoxDist,0,2)
+        self.dockLayout.addWidget( QLabel('Angle'),1,0 )
+        self.dockLayout.addWidget(self.spinBoxAngle,1,1)
+        self.dockLayout.addWidget(self.lockBoxAngle,1,2)
+        self.dockLayout.addWidget(self.relBox,1,3)
 
         # Create tooltips
         self.spinBoxDist.setToolTip('Distance (alt+1)')
         self.spinBoxAngle.setToolTip('Angle (alt+2)')
         self.lockBoxDist.setToolTip('Lock distance (shift+alt+1)')
         self.lockBoxAngle.setToolTip('Lock angle (shift+alt+2)')
-        self.absBox.setToolTip('Absolute angle (shift+alt+3')
+        self.relBox.setToolTip('Absolute angle (shift+alt+3')
 
         # Create shortcuts
         QObject.connect( QShortcut(QKeySequence("alt+1"), self.iface.mapCanvas()), SIGNAL("activated()"), self.focusDist)
@@ -128,7 +140,7 @@ class ImprovedPolygonCapturing:
         QObject.connect(self.iface, SIGNAL("currentLayerChanged(QgsMapLayer*)"), self.toggle)
     
         # This is the coordinates capture tool
-        self.tool = QgsMapToolCapturePolygon(self.iface, self.absBox, self.spinBoxDist, self.spinBoxAngle, self.lockBoxDist, self.lockBoxAngle, self.isPolygon)
+        self.tool = QgsMapToolCapturePolygon(self.iface, self.relBox, self.spinBoxDist, self.spinBoxAngle, self.lockBoxDist, self.lockBoxAngle, self.isPolygon)
 
     def focusAngle(self):
         """
@@ -156,13 +168,15 @@ class ImprovedPolygonCapturing:
         """
         Toggles the distance lock (used for by the shortcut action)
         """
-        self.absBox.toggle()
+        self.relBox.toggle()
 
     def unload(self):
         """
         Remove the plugin menu item and icon from the toolbar
         """
+        self.stop()
         self.dockWidget = None
+        self.iface.removePluginMenu(u"&Improved Polygon Capturing", self.helpAction)
         self.iface.digitizeToolBar().removeAction(self.capturePolygonAction)
 
     def toggle(self):
@@ -200,7 +214,7 @@ class ImprovedPolygonCapturing:
         capture polygon action is checked. Connect to the deactivate signal.
         """
         # This is the coordinates capture tool
-        self.tool = QgsMapToolCapturePolygon(self.iface, self.absBox, self.spinBoxDist, self.spinBoxAngle, self.lockBoxDist, self.lockBoxAngle, self.isPolygon)
+        self.tool = QgsMapToolCapturePolygon(self.iface, self.relBox, self.spinBoxDist, self.spinBoxAngle, self.lockBoxDist, self.lockBoxAngle, self.isPolygon)
 
         # Save the previous selected tool and set the new capture coordinate tool
         self.previous = self.canvas.mapTool()
@@ -226,3 +240,9 @@ class ImprovedPolygonCapturing:
 
         self.tool.clearMapCanvas()
         QObject.disconnect(self.tool, SIGNAL("deactivated()"), self.stop)
+
+
+
+    def showHelp(self):
+        # Simply show the help window
+        self.aboutWindow = AboutDialog()

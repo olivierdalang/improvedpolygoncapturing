@@ -32,11 +32,11 @@ class QgsMapToolCapturePolygon(QgsMapTool):
     QgsMapTool subclass to capture polygon with preset edge length and add
     it as new features to the current layer.
     """
-    def __init__(self, iface, absBox, spinBoxDist, spinBoxAngle, lockBoxDist, lockBoxAngle, isPolygon):
+    def __init__(self, iface, relBox, spinBoxDist, spinBoxAngle, lockBoxDist, lockBoxAngle, isPolygon):
         QgsMapTool.__init__(self, iface.mapCanvas())
         self.iface = iface
         self.canvas = iface.mapCanvas()
-        self.absBox = absBox
+        self.relBox = relBox
         self.spinBoxDist = spinBoxDist
         self.spinBoxAngle = spinBoxAngle
         self.lockBoxDist = lockBoxDist
@@ -143,7 +143,7 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         """
     
         # Get the values from the UI
-        absBox = self.absBox.isChecked()
+        relBox = self.relBox.isChecked()
         distance = self.spinBoxDist.value()
         angle = self.spinBoxAngle.value()
         distanceLock = self.lockBoxDist.isChecked()
@@ -154,7 +154,7 @@ class QgsMapToolCapturePolygon(QgsMapTool):
 
         # If the capture list contains already vertices, then calculate the new position based on the distance (and considering snapping)
         if len(self.captureList) > 0:
-            newPt = self.calculatePointPos(pt, absBox, distance, angle, distanceLock, angleLock)
+            newPt = self.calculatePointPos(pt, relBox, distance, angle, distanceLock, angleLock)
         # If this is the first point add a new point to the capture list at the current mouse position considering the default snapping behaviour.
         else:
             snappedPt = self.snapToBackgroundLayers(pt)
@@ -183,7 +183,7 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         @param {QgsPoint} pt Mouse pointer position in map coordinates
         """
         # Get the values from the UI
-        absBox = self.absBox.isChecked()
+        relBox = self.relBox.isChecked()
         distance = self.spinBoxDist.value()
         angle = self.spinBoxAngle.value()
         distanceLock = self.lockBoxDist.isChecked()
@@ -197,7 +197,7 @@ class QgsMapToolCapturePolygon(QgsMapTool):
 
         nbrVertices = self.rubberBand.numberOfVertices()
         if nbrVertices > 1:
-            newPt = self.calculatePointPos(cursorPt, absBox, distance, angle, distanceLock, angleLock)
+            newPt = self.calculatePointPos(cursorPt, relBox, distance, angle, distanceLock, angleLock)
             # Move the last point to create an interactive movement
             self.rubberBand.movePoint(newPt)
 
@@ -299,7 +299,7 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         # Clear and refresh the canvas in any case
         self.clearMapCanvas()
 
-    def calculatePointPos(self, pt, absBox, inputDistance, inputAngle, distanceLock, angleLock):
+    def calculatePointPos(self, pt, relBox, inputDistance, inputAngle, distanceLock, angleLock):
         """
         Calculate a new point based on the distance from the spin box and the snapping
         properties. Snapping has priority over actual mouse position but NOT over locked numerical values.
@@ -318,7 +318,7 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         newDist = 10 # This will store the computed distance
 
        
-        if not absBox:
+        if relBox:
             # If the angle is not absolute, we have to compute the angle of the last entered line segment
             if self.rubberBand.numberOfVertices() > 2:
                 secondLastPt = self.rubberBand.getPoint(0, self.rubberBand.numberOfVertices()-3)
@@ -330,14 +330,14 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         
         if angleLock:
             # If the angle is locked
-            if absBox:
+            if not relBox:
                 newAngle = inputAngle/180.0*math.pi # We compute the new angle based on the input angle (ABSOLUTE)
             else:
                 newAngle = lastAngle + inputAngle/180.0*math.pi # We compute the new angle based on the input angle (RELATIVE)
         else:
             # If the angle is not locked
             newAngle = math.atan2((pt.y()-lastPt.y()), pt.x()-lastPt.x()) # We simply set the new angle to the current angle
-            if absBox:
+            if not relBox:
                 self.spinBoxAngle.setValue(newAngle/math.pi*180.0) # Update the spinBox to reflect the current distance
             else:
                 self.spinBoxAngle.setValue( (newAngle-lastAngle)/math.pi*180.0  ) # Update the spinBox to reflect the current distance

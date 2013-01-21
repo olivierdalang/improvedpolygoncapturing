@@ -5,7 +5,7 @@ Improved Polygon Capturing is a [QGIS](http://www.qgis.org) [Python](http://www.
 
 ## How to use ##
 
-The plugin adds a new icon to the digitizing toolbar. ![icon](ressources/icon.png)
+The plugin adds a new icon to the digitizing toolbar.
 
 Select a polygon or a line layer and toggle editing by clicking on the new icon.
 
@@ -37,7 +37,7 @@ The plugin calculates the distance in plain trigonometry. Thus **it is not recom
 
 ## Feedback / bugs ##
 
-Please send bugs and ideas on the issue tracker : https://github.com/olivierdalang/improvedpolygoncapturing/issues
+Please send bugs and ideas on the issue tracker : [https://github.com/olivierdalang/improvedpolygoncapturing/issues](https://github.com/olivierdalang/improvedpolygoncapturing/issues)
 
 Or send me some feedback at : olivier.dalang@gmail.com
 
@@ -58,5 +58,5 @@ It was used to digitize land parcels with known edge lengths from high-resolutio
 
 ## Contribute ##
 
-Help is welcome ! There's a serie of issues and ideas on the github repository : https://github.com/olivierdalang/improvedpolygoncapturing.git
+Help is welcome ! There's a serie of issues and ideas on the github repository : [https://github.com/olivierdalang/improvedpolygoncapturing.git](https://github.com/olivierdalang/improvedpolygoncapturing.git)
 
