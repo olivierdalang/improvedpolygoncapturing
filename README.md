@@ -1,45 +1,62 @@
 # improvedpolygoncapturing2 #
 
-
-## How it works ##
-
-### Distance ###
-Distance must be entered in the first editfield. The first checkbox must be checked so the distance is locked to the editfield's value.
-Use alt-1 to focus the distance input field and alt-shit-1 to toggle distance lock.
-
-### Angle ###
-Angle must be entered in the second editfield. The second checkbox must be checked so the angle is locked to the editfield's value.
-The third checkbox must be checked if the angle is entered in absolute value (if it's unchecked, the angle is calculated in relation to the last point)
-Use alt-2 to focus the angle input field and alt-shit-2 to toggle angle lock.
-
-### Projection ###
-When the angle is locked, the distance is set to the projection of the locked angle, so it is easy to align a shape orthogonally to a point.
+Improved Polygon Capturing is a [QGIS](http://www.qgis.org) [Python](http://www.python.org) plugin, that allows to digitize new polygons or lines with predefined edge lengths and angles, as you would do in a CAD program.
 
 
-## Todo ##
+## How to use ##
 
-### Short term ###
-- Highlight snapping
-- Think about if the angle/distance should remain locked or not after each new point
-- Update the display (rubberband) when the spinboxes are changed
-- Update documentation
-- Snapping to the currently editted feature would be useful (especially for "closing" 90° polygons with the projection feature)
-- Update translation
+The plugin adds a new icon to the digitizing toolbar. ![icon](ressources/icon.png)
 
-### Long term ###
-- Is it possible to use the same concept but for every tool ? The same input method could be usefull also for points layers and for advanced digitizine (split, reshape, ...). Maybe the plugin could become a general input assistance plugin instead of being a specific tool. But it seems impossible to simulate a mouse click at exact map coordinates...
+Select a polygon or a line layer and toggle editing by clicking on the new icon.
 
-### Done ###
-- Shortcuts : Is it possible to set shortcuts to give the focus to the right editfield ? (for instance : d for distance, a for angle, shift-d to lock the distance, shift-a to lock the angle)
-- With the input boxes, it would be more elegant to have the plugin in a specific palette (dockable). Currently, it's acceptable only when the palette is horizontal
+A Dockable palette will appear.
+
+From now on, you can enter the distance or the angle numerically in the edit fields. You have to check the "Lock" checkbox to actually lock the distance and/or the angle. Unlocked fields are entered using the mouse (which takes snapping into account).
+
+You can also switch between absolute angle or relative angles (relatives angles are relative to the last line segment) by checking the "delta" icon.
+
+Similar to the standard editing tools, left mouse clicks add new vertexes while right mouse clicks finish the geometry.
+
+After finishing a new geometry the feature form opens and attributes can be entered.
+
+### Shortcuts ###
+
+The following shortcuts are available:
+
+- alt+1 : focus the distance edit field
+- alt+2 : focus the angle edit field
+- alt+shift+1 : toggle the distance lock box
+- alt+shift+2 : toggle the angle lock box
+- alt+shift+3 : toggle the absolute angle box
 
 
-## Bugs ##
+## Caveats ##
 
-### Known ###
-- The relative angle calculation must be tested, i've had some bugs sometimes.
-- There's an error message when quitting QGIS
-- The tool action does not reactivate when plugin is realoaded through "plugin reloader"
+The plugin calculates the distance in plain trigonometry. Thus **it is not recommended to use it in unprojected systems** like EPSG:4326.
 
-### Done ###
-- When the angle is fixed, the length, when defined by the mouse, should be the projection on the line instead of the absolute distance of the mouse to the last point
+
+## Feedback / bugs ##
+
+Please send bugs and ideas on the issue tracker : https://github.com/olivierdalang/improvedpolygoncapturing/issues
+
+Or send me some feedback at : olivier.dalang@gmail.com
+
+
+## History ##
+
+Improved polygon capturing plugin has been initially developed in June 2010 for a [land management and registration](http://www.gtz.de/en/weltweit/asien-pazifik/30296.htm) project in the Lao PDR by Adrian Weber.
+
+It was used to digitize land parcels with known edge lengths from high-resolution satellite images. The parcel edges have been measured a priori in the field.
+
+
+## Version history ##
+
+- Version 0.8 (June 2010): first published version
+- Version 0.9 (February 2011): added support for polyline layers and bug fixing
+- Version 1.0 (July 2011): feature form opens in editing mode after finishing a new feature
+- Version 1.1 (December 2012): added support for angle and updated interface
+
+## Contribute ##
+
+Help is welcome ! There's a serie of issues and ideas on the github repository : https://github.com/olivierdalang/improvedpolygoncapturing.git
+

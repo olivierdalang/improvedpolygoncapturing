@@ -1,8 +1,21 @@
-<RCC>
-  <qresource prefix="/plugins/improvedpolygoncapturing">
-    <file>mActionCapturePolygon.png</file>
-  </qresource>
-  <qresource prefix="/plugins/improvedpolygoncapturing">
-    <file>mActionCaptureLine.png</file>
-  </qresource>
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/plugins/improvedpolygoncapturing">
+        <file>ressources/mActionCapturePolygon.png</file>
+    </qresource>
+    <qresource prefix="/plugins/improvedpolygoncapturing">
+        <file>ressources/mActionCaptureLine.png</file>
+    </qresource>
+    <qresource prefix="/plugins/improvedpolygoncapturing">
+        <file>ressources/about.png</file>
+    </qresource>
+    <qresource prefix="/plugins/improvedpolygoncapturing">
+        <file>ressources/delta.png</file>
+    </qresource>
+    <qresource prefix="/plugins/improvedpolygoncapturing">
+        <file>ressources/lock.png</file>
+    </qresource>
+    <qresource prefix="/plugins/improvedpolygoncapturing">
+        <file>ressources/icon.png</file>
+    </qresource>
 </RCC>
