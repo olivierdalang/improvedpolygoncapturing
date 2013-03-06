@@ -65,7 +65,7 @@ class ImprovedPolygonCapturing:
         Creates the necessary actions
         """
         # Create an action to start capturing polygons and add it to the digitize toolbar
-        self.capturePolygonAction = QAction(QIcon(":/plugins/improvedpolygoncapturing/ressources/icon.png"), QCoreApplication.translate("ImprovedPolygonCapturing", "Capture Polygon with preset Edge Lengths"), self.iface.mainWindow())
+        self.capturePolygonAction = QAction(QIcon(":/plugins/improvedpolygoncapturing/ressources/icon.png"), QCoreApplication.translate("ImprovedPolygonCapturing", "CAD-like improved line/polygon capture"), self.iface.mainWindow())
         self.capturePolygonAction.setCheckable(True)
         self.capturePolygonAction.setEnabled(False)
         self.iface.digitizeToolBar().addAction(self.capturePolygonAction)
@@ -194,11 +194,11 @@ class ImprovedPolygonCapturing:
 
                     if layer.geometryType() == QGis.Polygon:
                         self.capturePolygonAction.setIcon(QIcon(":/plugins/improvedpolygoncapturing/ressources/mActionCapturePolygon.png"))
-                        self.capturePolygonAction.setToolTip(QCoreApplication.translate("ImprovedPolygonCapturing", "Capture Polygon with preset Edge Lengths"))
+                        self.capturePolygonAction.setToolTip(QCoreApplication.translate("ImprovedPolygonCapturing", "CAD-like improved polygon capture"))
                         self.isPolygon = True
                     elif layer.geometryType() == QGis.Line:
                         self.capturePolygonAction.setIcon(QIcon(":/plugins/improvedpolygoncapturing/ressources/mActionCaptureLine.png"))
-                        self.capturePolygonAction.setToolTip(QCoreApplication.translate("ImprovedPolygonCapturing", "Capture Line with preset Edge Lengths"))
+                        self.capturePolygonAction.setToolTip(QCoreApplication.translate("ImprovedPolygonCapturing", "CAD-like improved line capture"))
                         self.isPolygon = False
 
                 else:

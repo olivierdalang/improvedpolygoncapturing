@@ -11,17 +11,17 @@
 [general]
 name=Improved Polygon Capturing
 qgisMinimumVersion=1.0
-description=Cad-like polygons and lines digitizing. Numerically lock the angle and/or the length of the next line segment.
+description=Cad-like polygons and lines digitizing. Numerically lock the angle and/or the length of the next line segment. Based on Improved Polygon Capturing authored by Adrian Weber.
 version=1.1
-author=Adrian Weber and Olivier Dalang
-email=adrian.weber@cde.unibe.ch,olivier.dalang@gmail.com
+author=Adrian Weber;Olivier Dalang
+email=adrian.weber@cde.unibe.ch;olivier.dalang@gmail.com
 
 # end of mandatory metadata
 
 # Optional items:
 
 # Uncomment the following line and add your changelog entries:
-changelog=added help (via the plugin menu), store floating palettes positions, added hide/show all, added delete button, fixed a small bug where there was a NoGeometry error under certain circumstances, fixed clone checkbox staying checked
+changelog=added ability to set edges angle too, update UI, added help (via the plugin menu)
 
 # tags are comma separated with spaces allowed
 tags=editing,digitizing,angle,length,polygone,cad

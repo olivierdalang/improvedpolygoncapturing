@@ -1,6 +1,8 @@
-# improvedpolygoncapturing2 #
+# Improved Polygon Capturing 2 #
 
 Improved Polygon Capturing is a [QGIS](http://www.qgis.org) [Python](http://www.python.org) plugin, that allows to digitize new polygons or lines with predefined edge lengths and angles, as you would do in a CAD program.
+
+It is based upon Improved Polygon Capturing authored by Adrian Weber.
 
 
 ## How to use ##
@@ -32,7 +34,7 @@ The following shortcuts are available:
 
 ## Caveats ##
 
-The plugin calculates the distance in plain trigonometry. Thus **it is not recommended to use it in unprojected systems** like EPSG:4326.
+The plugin calculates the distance in plain trigonometry. Thus **it is not recommended to use it in unprojected systems like EPSG:4326**.
 
 
 ## Feedback / bugs ##
