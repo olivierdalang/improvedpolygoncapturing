@@ -276,16 +276,19 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         # Create a new feature and set the geometry to it
         feature = QgsFeature()
         feature.setGeometry(geometry)
-
+        pr=self.layer.dataProvider()
+        attrib_tmp=[]
+		
         # Add the fields from the current layer to the feature
-        for index in self.layer.dataProvider().fields():
-            feature.addAttribute(index, self.layer.dataProvider().fields()[index])
+        for at in pr.fields():
+            attrib_tmp.append(at)
 
         # Open the feature form to edit the attributes. If the user cancels the
         # feature form, openFeatureForm returns false and the feature is not added
         # to the layer.
         # Since I'm not sure when QgisInterface.openFeatureForm has been added
         # to the QGIS API proper exception handling is needed.
+        feature.setAttributes(attrib_tmp)
         saveFeature = True
         try:
             saveFeature = self.iface.openFeatureForm(self.layer, feature, True)
