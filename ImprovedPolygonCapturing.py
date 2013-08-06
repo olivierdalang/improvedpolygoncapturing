@@ -36,7 +36,7 @@ class ImprovedPolygonCapturing:
         # Initialise the translation environment
         pluginPath = QFileInfo(__file__).absolutePath()
         # Extract the locale
-        localeName = QSettings().value("locale/userLocale").toString()
+        localeName = QSettings().value("locale/userLocale")
 
         if QFileInfo(pluginPath).exists():
             # Check first if the locale including the country exists
