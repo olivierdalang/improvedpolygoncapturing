@@ -44,7 +44,9 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         # If true the new geometry is a polygon else if false it's a line
         self.isPolygon = isPolygon
         # Create an empty rubber band
-        self.rubberBand = QgsRubberBand(self.canvas, self.isPolygon)
+        # self.rubberBand = QgsRubberBand(self.canvas, self.isPolygon) # BMF edit: isPolygon version deprecated
+        # self.rubberBand = QgsRubberBand(self.canvas, QGis.Polygon) # BMF for reference: Polygon > rubberband interior is filled in
+        self.rubberBand = QgsRubberBand(self.canvas, QGis.Line) #BMF Line > interior not filled (what we want for EntryLines)
         # Create an empty list for vertex marker
         self.vertexMarkers = []
         # Create an empty list to store the new vertices
@@ -90,6 +92,24 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         to the current polygon, a right click set the last point and
         finish the new geometry.
         """
+
+        ##### BMF copied from 1.8 version of QgsMapToolCapturePolygon 2014-01-03 #####
+        # Get the settings for the digitizing rubberband
+        settings = QSettings()
+## toInt() deprecated        red = settings.value("/qgis/digitizing/line_color_red", 255).toInt()[0]
+## toInt() deprecated        green = settings.value("/qgis/digitizing/line_color_green", 0).toInt()[0]
+## toInt() deprecated        blue = settings.value("/qgis/digitizing/line_color_blue", 0).toInt()[0]
+        # BMF hardcoding red instead of using registry settings
+        rubberBandColor = QColor(255, 0, 0)
+        self.rubberBand.setColor(rubberBandColor)
+        # Get also the line width from the settings
+## toInt() deprecated        lineWidth = settings.value("/qgis/digitizing/line_width", 1).toInt()[0]
+        # BMF hardcoding linewidth of 1 instead of using registry settings
+        lineWidth = 1
+        self.rubberBand.setWidth(lineWidth)
+        self.rubberBand.show()
+        ##### END BMF edit section #####
+        
         # Captures the clicked coordinate and transform
         mapCoordinates = self.toMapCoordinates(event.pos())
 
@@ -121,7 +141,11 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         is used by the ImprovedPolygonCapturing class to disconnect
         all signal and disable the button in the toolbar
         """
-        self.emit(SIGNAL("deactivated()"))
+        # BMF added try block > getting error on QGIS close
+        try:
+            self.emit(SIGNAL("deactivated()"))
+        except:
+            pass
         pass
   
     def isZoomTool(self):
@@ -208,7 +232,7 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         @param {QgsPoint} pt The last point to add to the polygon in map coordinates
         """
 
-        self.addVertex(pt)
+        # self.addVertex(pt) ## BMF commented out > 2.0 right-click only ends editing, doesn't add another point.
  
         # Handle polygons
         if self.isPolygon:
