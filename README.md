@@ -58,6 +58,7 @@ It was used to digitize land parcels with known edge lengths from high-resolutio
 - Version 1.0 (July 2011): feature form opens in editing mode after finishing a new feature
 - Version 1.1 (December 2012): added support for angle and updated interface
 - Version 1.2 (August 2013): updated to work with QGIS 2.0 (thanks to Angelos Tzotsos), removed experimental flag
+- Version 1.3 (January 2014): removed small rubberband bugs (thanks to Brian Freed)
 
 ## Contribute ##
 

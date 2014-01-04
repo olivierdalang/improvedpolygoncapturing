@@ -12,7 +12,7 @@
 name=Improved Polygon Capturing
 qgisMinimumVersion=2.0
 description=Cad-like polygons and lines digitizing. Numerically lock the angle and/or the length of the next line segment. Maintained by Olivier Dalang.
-version=1.2
+version=1.3
 author=Adrian Weber
 email=adrian.weber@cde.unibe.ch
 
@@ -21,7 +21,7 @@ email=adrian.weber@cde.unibe.ch
 # Optional items:
 
 # Uncomment the following line and add your changelog entries:
-changelog=updated to work with QGIS 2.0 (thanks to Angelos Tzotsos), removed experimental flag
+changelog=removed small rubberband bugs (thanks to Brian Freed)
 
 # tags are comma separated with spaces allowed
 tags=editing,digitizing,angle,length,polygone,cad
