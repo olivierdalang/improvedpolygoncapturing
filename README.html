@@ -1,16 +1,38 @@
-<h1 id="improved-polygon-capturing-2">Improved Polygon Capturing 2</h1>
+<p><strong>/!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\</strong></p>
+
+<p><strong>THIS PLUGIN HAS BEEN DISCONTINUED AND WON'T BE UPDATED ANYMORE</strong></p>
+
+<p>It is replaced by the <strong>CadInput</strong> plugin.
+Since CadInput is still experimental, you must enable the listing of experimentals plugins in QGIS's plugin's settings dialog.</p>
+
+<p><strong>/!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\</strong></p>
+
+<h1>Improved Polygon Capturing 2</h1>
+
 <p>Improved Polygon Capturing is a <a href="http://www.qgis.org">QGIS</a> <a href="http://www.python.org">Python</a> plugin, that allows to digitize new polygons or lines with predefined edge lengths and angles, as you would do in a CAD program.</p>
+
 <p>It is based upon Improved Polygon Capturing authored by Adrian Weber.</p>
-<h2 id="how-to-use">How to use</h2>
+
+<h2>How to use</h2>
+
 <p>The plugin adds a new icon to the digitizing toolbar.</p>
+
 <p>Select a polygon or a line layer and toggle editing by clicking on the new icon.</p>
+
 <p>A Dockable palette will appear.</p>
+
 <p>From now on, you can enter the distance or the angle numerically in the edit fields. You have to check the "Lock" checkbox to actually lock the distance and/or the angle. Unlocked fields are entered using the mouse (which takes snapping into account).</p>
+
 <p>You can also switch between absolute angle or relative angles (relatives angles are relative to the last line segment) by checking the "delta" icon.</p>
+
 <p>Similar to the standard editing tools, left mouse clicks add new vertexes while right mouse clicks finish the geometry.</p>
+
 <p>After finishing a new geometry the feature form opens and attributes can be entered.</p>
-<h3 id="shortcuts">Shortcuts</h3>
+
+<h3>Shortcuts</h3>
+
 <p>The following shortcuts are available:</p>
+
 <ul>
 <li>alt+1 : focus the distance edit field</li>
 <li>alt+2 : focus the angle edit field</li>
@@ -18,15 +40,25 @@
 <li>alt+shift+2 : toggle the angle lock box</li>
 <li>alt+shift+3 : toggle the absolute angle box</li>
 </ul>
-<h2 id="caveats">Caveats</h2>
+
+<h2>Caveats</h2>
+
 <p>The plugin calculates the distance in plain trigonometry. Thus <strong>it is not recommended to use it in unprojected systems like EPSG:4326</strong>.</p>
-<h2 id="feedback-bugs">Feedback / bugs</h2>
+
+<h2>Feedback / bugs</h2>
+
 <p>Please send bugs and ideas on the issue tracker : <a href="https://github.com/olivierdalang/improvedpolygoncapturing/issues">https://github.com/olivierdalang/improvedpolygoncapturing/issues</a></p>
+
 <p>Or send me some feedback at : olivier.dalang@gmail.com</p>
-<h2 id="history">History</h2>
+
+<h2>History</h2>
+
 <p>Improved polygon capturing plugin has been initially developed in June 2010 for a <a href="http://www.gtz.de/en/weltweit/asien-pazifik/30296.htm">land management and registration</a> project in the Lao PDR by Adrian Weber.</p>
+
 <p>It was used to digitize land parcels with known edge lengths from high-resolution satellite images. The parcel edges have been measured a priori in the field.</p>
-<h2 id="version-history">Version history</h2>
+
+<h2>Version history</h2>
+
 <ul>
 <li>Version 0.8 (June 2010): first published version</li>
 <li>Version 0.9 (February 2011): added support for polyline layers and bug fixing</li>
@@ -35,5 +67,7 @@
 <li>Version 1.2 (August 2013): updated to work with QGIS 2.0 (thanks to Angelos Tzotsos), removed experimental flag</li>
 <li>Version 1.3 (January 2014): removed small rubberband bugs (thanks to Brian Freed)</li>
 </ul>
-<h2 id="contribute">Contribute</h2>
+
+<h2>Contribute</h2>
+
 <p>Help is welcome ! There's a serie of issues and ideas on the github repository : <a href="https://github.com/olivierdalang/improvedpolygoncapturing.git">https://github.com/olivierdalang/improvedpolygoncapturing.git</a></p>

@@ -1,3 +1,12 @@
+**/!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\**
+
+**THIS PLUGIN HAS BEEN DISCONTINUED AND WON'T BE UPDATED ANYMORE**
+
+It is replaced by the **CadInput** plugin.
+Since CadInput is still experimental, you must enable the listing of experimentals plugins in QGIS's plugin's settings dialog.
+
+**/!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\**
+
 # Improved Polygon Capturing 2 #
 
 Improved Polygon Capturing is a [QGIS](http://www.qgis.org) [Python](http://www.python.org) plugin, that allows to digitize new polygons or lines with predefined edge lengths and angles, as you would do in a CAD program.
