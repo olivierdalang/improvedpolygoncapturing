@@ -83,7 +83,7 @@ class QgsMapToolCapturePolygon(QgsMapTool):
         if self.layer is not None:
             for i in range(len(avoidIntersectionList[0])):
                 # Compare the list entries with the current layer id
-                if str(avoidIntersectionList[0][i]) == self.layer.getLayerID():
+                if str(avoidIntersectionList[0][i]) == self.layer.id():
                     self.isAvoidingIntersection = True
 
     def canvasPressEvent(self, event):
